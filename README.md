@@ -43,7 +43,7 @@ A modern, interactive news dashboard built with Next.js, featuring real-time new
 ### 📤 Export Functionality
 - **PDF Export**: Generate professional PDF reports
 - **CSV Export**: Export data for spreadsheet analysis
-- **Google Sheets Integration**: Direct export to Google Sheets (placeholder)
+
 
 ## 🚀 Quick Start
 
