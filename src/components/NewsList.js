@@ -6,6 +6,7 @@ import Papa from 'papaparse'
 import { useSession } from 'next-auth/react'
 
 export default function NewsList() {
+  // -------------------- State Management --------------------
   const [articles, setArticles] = useState([])
   const [filters, setFilters] = useState({ author: '', dateFrom: '', dateTo: '', type: '', keyword: '' })
   const [filtered, setFiltered] = useState([])
@@ -13,7 +14,7 @@ export default function NewsList() {
   const [loading, setLoading] = useState(true)
   const { data: session } = useSession()
 
-  // Payout state
+  // Payout state (persisted in localStorage)
   const [payoutRates, setPayoutRates] = useState(() => {
     if (typeof window !== 'undefined') {
       return JSON.parse(localStorage.getItem('payoutRates') || '{}')
@@ -21,18 +22,22 @@ export default function NewsList() {
     return {}
   })
 
-  // Get unique authors and sources from filtered articles
+  // -------------------- Data Preparation --------------------
+  // Get unique authors and sources for filter dropdowns
   const uniqueAuthors = Array.from(new Set(articles.map(a => a.author || 'Unknown'))).sort();
   const uniqueSources = Array.from(new Set(articles.map(a => (a.source && a.source.name) || 'Unknown'))).sort();
 
+  // -------------------- Data Fetching --------------------
   useEffect(() => {
     setLoading(true)
+    // Fetch news from our serverless API route
     axios.get('/api/news')
       .then(res => setArticles(res.data.articles))
       .catch(() => setError('Failed to fetch news. Please try again later.'))
       .finally(() => setLoading(false))
   }, [])
 
+  // -------------------- Filtering Logic --------------------
   useEffect(() => {
     let data = articles
     if (filters.author) data = data.filter(a => (a.author || '').toLowerCase().includes(filters.author.toLowerCase()))
@@ -43,19 +48,21 @@ export default function NewsList() {
     setFiltered(data)
   }, [articles, filters])
 
-  // Save payout rates to localStorage
+  // -------------------- Persist Payout Rates --------------------
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('payoutRates', JSON.stringify(payoutRates))
     }
   }, [payoutRates])
 
-  // Payout table data
+  // -------------------- Payout Table Logic --------------------
+  // Count articles per author
   const authorCounts = filtered.reduce((acc, a) => {
     const author = a.author || 'Unknown'
     acc[author] = (acc[author] || 0) + 1
     return acc
   }, {})
+  // Prepare payout rows for table
   const payoutRows = Object.keys(authorCounts).map(author => ({
     author,
     count: authorCounts[author],
@@ -64,6 +71,7 @@ export default function NewsList() {
   }))
   const totalPayout = payoutRows.reduce((sum, row) => sum + row.total, 0)
 
+  // -------------------- Payout Handlers --------------------
   function handleRateChange(author, value) {
     setPayoutRates(rates => ({ ...rates, [author]: Number(value) }))
   }
@@ -95,9 +103,11 @@ export default function NewsList() {
     alert('Google Sheets export is a placeholder. Implement API integration as needed.')
   }
 
-  // Admin check (hardcoded email)
+  // -------------------- Admin Check --------------------
+  // Only show payout table for admin user
   const isAdmin = session && session.user && session.user.email === 'admin@example.com'
 
+  // -------------------- Export Handlers --------------------
   function exportPDF() {
     const doc = new jsPDF()
     filtered.forEach((a, i) => {
@@ -115,7 +125,7 @@ export default function NewsList() {
     link.click()
   }
 
-  // Loading component
+  // -------------------- Loading State --------------------
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -131,6 +141,7 @@ export default function NewsList() {
     )
   }
 
+  // -------------------- Render --------------------
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto p-4">
@@ -171,6 +182,7 @@ export default function NewsList() {
               🔍 Search & Filter
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {/* Author Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   👤 Author
@@ -186,7 +198,7 @@ export default function NewsList() {
                   ))}
                 </select>
               </div>
-
+              {/* Date From Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   📅 From Date
@@ -198,7 +210,7 @@ export default function NewsList() {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-
+              {/* Date To Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   📅 To Date
@@ -210,7 +222,7 @@ export default function NewsList() {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-
+              {/* Source Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   📰 Source
@@ -226,7 +238,7 @@ export default function NewsList() {
                   ))}
                 </select>
               </div>
-
+              {/* Keyword Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   🔎 Keyword

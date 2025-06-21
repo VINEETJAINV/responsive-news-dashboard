@@ -4,6 +4,7 @@ import { Chart, BarElement, CategoryScale, LinearScale, ArcElement, PointElement
 import 'chartjs-adapter-date-fns'
 Chart.register(BarElement, CategoryScale, LinearScale, ArcElement, PointElement, LineElement, TimeScale, Tooltip, Legend, RadialLinearScale, PolarAreaController, RadarController)
 
+// Chart type options for the dashboard
 const chartTypes = [
   { key: 'main', label: 'Dashboard', icon: '📊' },
   { key: 'bar', label: 'Bar Chart', icon: '📈' },
@@ -15,32 +16,36 @@ const chartTypes = [
 ]
 
 export default function ChartView({ articles }) {
+  // -------------------- State --------------------
   const [selected, setSelected] = useState('main')
-  // Detect theme
+  const [isDark, setIsDark] = useState(false)
+
+  // Detect theme (dark/light)
   useEffect(() => {
     const root = window.document.documentElement
     setIsDark(root.classList.contains('dark'))
   }, [])
-  const [isDark, setIsDark] = useState(false)
 
-  // Bar & Doughnut: Articles by author
+  // -------------------- Data Preparation --------------------
+  // Count articles by author
   const authorCounts = articles.reduce((acc, a) => {
     const author = a.author || 'Unknown'
     acc[author] = (acc[author] || 0) + 1
     return acc
   }, {})
 
-  // Helper to truncate labels
+  // Helper to truncate long labels
   function truncateLabel(label, max = 10) {
     return label.length > max ? label.slice(0, max) + '…' : label;
   }
 
-  // Color palette for bars
+  // Color palette for charts
   const palette = [
     '#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa', '#f472b6', '#38bdf8', '#facc15', '#4ade80', '#fb7185', '#818cf8', '#f59e42', '#2dd4bf', '#c084fc', '#fcd34d', '#fca5a5', '#a3e635', '#fda4af', '#f472b6', '#fbbf24'
   ];
 
-  // For bar and line charts, use truncated labels and colorful bars
+  // -------------------- Chart Data --------------------
+  // Bar & Doughnut: Articles by author
   const barData = {
     labels: Object.keys(authorCounts).map(l => truncateLabel(l)),
     datasets: [{
@@ -144,7 +149,7 @@ export default function ChartView({ articles }) {
     }]
   };
 
-  // Radar: Articles by author (or source)
+  // Radar: Articles by author
   const radarData = {
     labels: Object.keys(authorCounts),
     datasets: [{
@@ -202,6 +207,8 @@ export default function ChartView({ articles }) {
       }
     ]
   }
+
+  // -------------------- Chart Options --------------------
   // Bubble chart options for standalone chart (show axis labels/ticks)
   const bubbleStandaloneOptions = {
     responsive: true,
@@ -242,7 +249,7 @@ export default function ChartView({ articles }) {
     }
   }
 
-  // Chart area background plugin
+  // Chart area background plugin for dark/light mode
   const chartBgPlugin = {
     id: 'customBg',
     beforeDraw: (chart) => {
@@ -445,6 +452,7 @@ export default function ChartView({ articles }) {
     }
   }
 
+  // -------------------- Chart Rendering --------------------
   let chart = null
   if (selected === 'main') {
     chart = (
@@ -508,6 +516,7 @@ export default function ChartView({ articles }) {
     )
   }
 
+  // -------------------- Render --------------------
   return (
     <div className="flex flex-col gap-6">
       <div className="h-[420px]">{chart}</div>
