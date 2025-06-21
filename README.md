@@ -162,10 +162,6 @@ dashboard-app/
 3. Add environment variables in Vercel dashboard
 4. Deploy automatically
 
-### Other Platforms
-- **Netlify**: Configure build settings for Next.js
-- **AWS Amplify**: Use Amplify CLI for deployment
-- **Docker**: Create Dockerfile for containerized deployment
 
 ### Environment Variables for Production
 ```env
