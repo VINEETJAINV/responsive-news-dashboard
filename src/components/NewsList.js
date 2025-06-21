@@ -27,15 +27,10 @@ export default function NewsList() {
 
   useEffect(() => {
     setLoading(true)
-    axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=09bff22d792c46468dd47d83b3e90aca`)
-      .then(res => {
-        setArticles(res.data.articles)
-        setLoading(false)
-      })
-      .catch(() => {
-        setError('Failed to fetch news. Please try again later.')
-        setLoading(false)
-      })
+    axios.get('/api/news')
+      .then(res => setArticles(res.data.articles))
+      .catch(() => setError('Failed to fetch news. Please try again later.'))
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
