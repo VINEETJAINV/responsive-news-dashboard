@@ -43,7 +43,7 @@ A modern, interactive news dashboard built with Next.js, featuring real-time new
 ### 📤 Export Functionality
 - **PDF Export**: Generate professional PDF reports
 - **CSV Export**: Export data for spreadsheet analysis
-- **Google Sheets Integration**: Direct export to Google Sheets (placeholder)
+
 
 ## 🚀 Quick Start
 
@@ -162,10 +162,6 @@ dashboard-app/
 3. Add environment variables in Vercel dashboard
 4. Deploy automatically
 
-### Other Platforms
-- **Netlify**: Configure build settings for Next.js
-- **AWS Amplify**: Use Amplify CLI for deployment
-- **Docker**: Create Dockerfile for containerized deployment
 
 ### Environment Variables for Production
 ```env
@@ -187,23 +183,3 @@ NEWS_API_KEY=your-news-api-key
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [News API](https://newsapi.org/) for providing news data
-- [Chart.js](https://www.chartjs.org/) for interactive charts
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [Next.js](https://nextjs.org/) for the framework
-- [NextAuth.js](https://next-auth.js.org/) for authentication
-
-## 📞 Support
-
-If you have any questions or need help, please:
-
-1. Check the [Issues](https://github.com/yourusername/news-dashboard/issues) page
-2. Create a new issue with detailed information
-3. Contact the maintainers
-
----
-
-**Made with ❤️ by [Your Name]**
